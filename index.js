@@ -18,23 +18,27 @@ async function searchMusicBrainz(query) {
         response.artists.map(artist => {
             if(artist === bestMatch) return
 
-            if(artist.name === bestMatch.name) {
-                conflicts.push(new MusicBrainzConflict(artist))
-            }
+            if(artist.name === bestMatch.name) conflicts.push(new MusicBrainzConflict(artist))
         })
 
-        if(conflicts.length > 1) {conflicts.map(conflict => {
-            //display html to select which data to use
-        })/*;return*/}
-
-        getArtistAlbumDebut(response.artists[0].id)
-
+        if(conflicts.length > 1) conflicts.map(conflict => {
+            document.querySelector('#conflicts').innerHTML+=`
+            <div class="conflict-item" musicbrainz-id="${conflict.id}" onclick="selectConflict(this.getAttribute('musicbrainz-id'))">
+                ${conflict.description}
+            </div>
+        `}) 
+        else getArtistAlbumDebut(response.artists[0].id)
     } 
     catch (error) {console.log(error)}
 }
 
-async function getArtistAlbumDebut(musicBrainzId) {
+function selectConflict(id) {
+    document.querySelector('#conflicts').innerHTML = ''
+    getArtistAlbumDebut(id)
     
+}
+
+async function getArtistAlbumDebut(musicBrainzId) {
     let albumDebutYear = null
     let releaseCount = 0
     const limit = 100
@@ -47,18 +51,20 @@ async function getArtistAlbumDebut(musicBrainzId) {
             releaseCount = response["release-group-count"]
 
             response["release-groups"].map(release => {
-                if(release["primary-type"] !== "Album" || release["secondary-types"].includes("Demo") || release["secondary-types"].includes("Live"))return;
-                let firstReleaseDate = null
-                if(release["first-release-date"].length >= 4) firstReleaseDate = release["first-release-date"].substring(0,4)
-                if(firstReleaseDate == null) return
+                let isNotAlbum = 
+                    release["primary-type"] !== "Album" 
+                    || release["secondary-types"].includes("Demo") 
+                    || release["secondary-types"].includes("Live")
+
+                if(isNotAlbum)return;
                 
+                let releaseYear = null
+                if(release["first-release-date"].length >= 4) releaseYear = release["first-release-date"].substring(0,4)
+                if(releaseYear == null) return
                 
-                firstReleaseDate = Number(firstReleaseDate)
-                if(albumDebutYear > firstReleaseDate || albumDebutYear == null) {
-                    console.log(release)
-                    albumDebutYear = firstReleaseDate
-                }
-                    
+                releaseYear = Number(releaseYear)
+                if(albumDebutYear > releaseYear || albumDebutYear == null) 
+                    albumDebutYear = releaseYear
             })
             i++
         } 
