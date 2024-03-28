@@ -1,4 +1,4 @@
-#results{
+#artist-search-results{
     width:20rem;
     height: 20rem;
     margin: 1rem;
@@ -7,12 +7,19 @@
     overflow-x: hidden;
 }
 
-.resultItem{
+.artist-search-result{
     height: 3rem;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     margin-bottom: 0.25rem;
 
+}
+
+.artist-search-result .artist-name{
+
+}
+.artist-search-result .artist-description{
+    font-size: 0.75em;
 }
 .resultItem:hover{
     background-color: rgb(226, 226, 226);

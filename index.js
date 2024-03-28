@@ -8,26 +8,31 @@ async function searchLastfm(inputElement) {
     catch (error) {console.log(error)}
 }
 
-async function searchMusicBrainz(query) {
+export async function searchMusicBrainz(query) {
     try {
         const result = await fetch(`https://musicbrainz.org/ws/2/artist/?query=${query}&fmt=json`)
         const response = await result.json()
-        const bestMatch = response.artists[0]
-        let conflicts = [new MusicBrainzConflict(bestMatch)]
+
+        displayArtistSearchResults(response.artists)
+
+        //const bestMatch = response.artists[0]
+        //let conflicts = [new MusicBrainzConflict(bestMatch)]
         
-        response.artists.map(artist => {
-            if(artist === bestMatch) return
 
-            if(artist.name === bestMatch.name) conflicts.push(new MusicBrainzConflict(artist))
-        })
-
-        if(conflicts.length > 1) conflicts.map(conflict => {
-            document.querySelector('#conflicts').innerHTML+=`
-            <div class="conflict-item" musicbrainz-id="${conflict.id}" onclick="selectConflict(this.getAttribute('musicbrainz-id'))">
-                ${conflict.description}
-            </div>
-        `}) 
-        else getArtistAlbumDebut(response.artists[0].id)
+        //response.artists.map(artist => {
+        //    if(artist === bestMatch) return
+//
+        //    if(artist.name === bestMatch.name) conflicts.push(new MusicBrainzConflict(artist))
+        //})
+//
+        //if(conflicts.length > 1) conflicts.map(conflict => {
+        //    document.querySelector('#conflicts').innerHTML+=`
+        //    <div class="conflict-item" musicbrainz-id="${conflict.id}" onclick="selectConflict(this.getAttribute('musicbrainz-id'))">
+        //        ${conflict.description}
+        //    </div>
+        //`}) 
+        //else 
+        //getArtistAlbumDebut(response.artists[0].id)
     } 
     catch (error) {console.log(error)}
 }
@@ -70,26 +75,101 @@ async function getArtistAlbumDebut(musicBrainzId) {
         } 
         while ((i*limit) < releaseCount)
 
-        console.log(albumDebutYear)
+        return albumDebutYear
     }
     catch (error) {console.log(error)}
 }
 
-async function loadSearchResults(results) {
-    const resultsDisplay = document.querySelector("#results")
+let currentlyDisplayedArtists = []
+async function displayArtistSearchResults(artists) {
+    const resultsDisplay = document.querySelector("#artist-search-results")
     resultsDisplay.innerHTML = ""
+
+    currentlyDisplayedArtists = artists
     
-    results.results.artistmatches.artist.map(artist => {
+    artists.map(artist => {
         resultsDisplay.innerHTML+=`
-        <div class="resultItem" artist-name="${artist.name}" onclick="searchMusicBrainz(this.getAttribute('artist-name'))">
-        ${artist.name}
+        <div class="artist-search-result" artist-name="${artist.name}" artist-description="${artist.disambiguation}" musicbrainz-id="${artist.id}">
+        <span class="artist-name">${artist.name}</span>
+        <span class="artist-description">${artist.disambiguation ?? ' - '}</span>
         </div>
     `})
 }
 
-class Artist {
-    constructor(name, id, gender, groupSize, tags, debutAlbumYear) {
+export function selectArtist(artistElement) {
+    let selectedArtist = null
+    currentlyDisplayedArtists.map(displayedArtist => {
+        if(displayedArtist.id === artistElement.getAttribute('musicbrainz-id')) {
+            selectedArtist = displayedArtist
+            return
+        }
+    })
 
+    constructArtistProfile(selectedArtist)
+}
+
+async function getTags(musicBrainzArtist) {
+    let tags = musicBrainzArtist.tags
+    let topTags = []
+    console.log(musicBrainzArtist)
+
+    const desiredTagAmount = 5
+    if(tags && tags.length >=desiredTagAmount) {
+        for(let i=0; i<desiredTagAmount; i++) {
+            topTags.push(tags[i].name)
+        }
+        return topTags
+    }
+
+    try{
+        let result = await fetch(`http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&mbid=${musicBrainzArtist.id}&api_key=0d233a8d757fa7ab78f3a5605a7567af&format=json`)
+        let response = await result.json()
+        
+        if(response.error) {
+            result = await fetch(`http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${musicBrainzArtist.name}&api_key=0d233a8d757fa7ab78f3a5605a7567af&format=json`)
+            response = await result.json()
+        }
+
+        response.artist.tags.tag.map(tag => {
+            topTags.push(tag.name)
+        })
+    }
+    catch(error) {console.log(error)}
+    
+    return topTags
+}
+
+
+async function constructArtistProfile(selectedArtist) {
+
+    //const result = await fetch(`https://musicbrainz.org/ws/2/area/${selectedArtist.area.id}?inc=area-rels&fmt=json`)
+    //const response = await result.json()
+    //console.log(response)
+
+    let artistType
+    if(selectedArtist.type === "Person") artistType = "Individual"
+    if(selectedArtist.type === "Group") artistType = "Group"
+    
+    let artist = new Artist(
+        selectedArtist.name,
+        selectedArtist.id,
+        selectedArtist.gender,
+        artistType,
+        await getTags(selectedArtist),
+        await getArtistAlbumDebut(selectedArtist.id)
+    )
+
+    console.log(artist)
+}
+
+class Artist {
+    constructor(name, id, gender, type, tags, debutAlbumYear) {
+        this.name = name
+        this.id = id
+        this.gender = gender
+        this.type = type
+        this.tags = tags
+        this.debutAlbumYear = debutAlbumYear
     }
 }
 
