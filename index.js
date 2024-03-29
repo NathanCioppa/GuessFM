@@ -139,12 +139,38 @@ async function getTags(musicBrainzArtist) {
     return topTags
 }
 
+async function getCountry(musicBrainzArea) {
+    if(musicBrainzArea.type === "Country") return musicBrainzArea.name
+    let searchId
+
+    if(musicBrainzArea.relations){
+        let foundCountry = false
+        let countryName
+        musicBrainzArea.relations.map(relatedArea => {
+            if(relatedArea.direction === "backward") {
+                searchId = relatedArea.area.id
+                countryName = relatedArea.area.name
+                foundCountry = relatedArea.area.type === "Country"
+                return
+            }
+        })
+        if(foundCountry) return countryName
+        if(searchId == null) return
+    }
+    else {searchId = musicBrainzArea.id}
+
+    try{
+        const result = await fetch(`https://musicbrainz.org/ws/2/area/${searchId}?inc=area-rels&fmt=json`)
+        const response = await result.json()
+        return await getCountry(response)
+    }
+    catch(error) {console.log(error)}
+    
+    return null
+}
+
 
 async function constructArtistProfile(selectedArtist) {
-
-    //const result = await fetch(`https://musicbrainz.org/ws/2/area/${selectedArtist.area.id}?inc=area-rels&fmt=json`)
-    //const response = await result.json()
-    //console.log(response)
 
     let artistType
     if(selectedArtist.type === "Person") artistType = "Individual"
@@ -156,20 +182,22 @@ async function constructArtistProfile(selectedArtist) {
         selectedArtist.gender,
         artistType,
         await getTags(selectedArtist),
-        await getArtistAlbumDebut(selectedArtist.id)
+        await getArtistAlbumDebut(selectedArtist.id),
+        selectedArtist.area.type === "Country" ? selectedArtist.area.name : await getCountry(selectedArtist.area)
     )
 
     console.log(artist)
 }
 
 class Artist {
-    constructor(name, id, gender, type, tags, debutAlbumYear) {
+    constructor(name, id, gender, type, tags, debutAlbumYear, area) {
         this.name = name
         this.id = id
         this.gender = gender
         this.type = type
         this.tags = tags
         this.debutAlbumYear = debutAlbumYear
+        this.area = area
     }
 }
 
