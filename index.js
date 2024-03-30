@@ -14,48 +14,81 @@ export async function searchMusicBrainz(query) {
 
 
 
-// Searches through every release from the given artist on MusicBrainz to determine the earliest released album, their debut album.
-// In some cases, mostly for new artists, no debut album will be returned because they do not have one.
-async function getArtistAlbumDebut(musicBrainzId) {
-    let albumDebutYear
+// Returns an array of MusicBrainz release groups from an artist's MusicBrainz id.
+// The returned array will contain every release group available for that artist.
+async function getArtistReleaseGroups(artistMusicBrainzId) {
+    let releases = []
     let releaseCount = 0
     const Limit = 100
     let timesSearched = 0
-
     try{
         do {
-            const Result = await fetch(`https://musicbrainz.org/ws/2/release-group/?artist=${musicBrainzId}&limit=${Limit}&offset=${Limit*timesSearched}&fmt=json`)
-            const Response = await Result.json()
+            const ReleaseGroupsRequest = await fetch(`https://musicbrainz.org/ws/2/release-group/?artist=${artistMusicBrainzId}&limit=${Limit}&offset=${Limit*timesSearched}&fmt=json`)
+            const ReleaseGroups = await ReleaseGroupsRequest.json()
             
             // The response will tell the total number of releases, but will not return more than 100.
             // This can be used to figure out if all releases have been checked, or if more requests are needed. 
-            releaseCount = Response["release-group-count"] 
+            releaseCount = ReleaseGroups["release-group-count"] 
 
-            // 'release-groups' property contains all releases from the artist
-            Response["release-groups"].map(release => {
-                let isNotAlbum = 
-                    release["primary-type"] !== "Album" 
-                    || release["secondary-types"].includes("Demo") 
-                    || release["secondary-types"].includes("Live")
-
-                if(isNotAlbum) return
-                
-                let releaseYear
-                // Sometimes, the release date is in just 'year' or 'year-month-day' format. Only the year is needed.
-                if(release["first-release-date"].length >= 4) releaseYear = release["first-release-date"].substring(0,4)
-                if(releaseYear == null) return
-                
-                releaseYear = Number(releaseYear)
-                if(releaseYear < albumDebutYear || albumDebutYear == null) 
-                    albumDebutYear = releaseYear
-            })
+            releases = releases.concat(ReleaseGroups["release-groups"])
             timesSearched++
-        } 
+        }
         while (timesSearched*Limit < releaseCount)
 
-        return albumDebutYear
+        return releases
     }
     catch (error) {console.log(error)}
+}
+
+
+
+// Searches through every release from the given artist on MusicBrainz to determine the earliest released album, their debut album.
+// In some cases, mostly for new artists, no debut album will be returned because they do not have one.
+function getArtistAlbumDebut(artistMusicBrainzReleaseGroups) {
+    let albumDebutYear
+
+    artistMusicBrainzReleaseGroups.map(release => {
+        let releaseYear
+        // Sometimes, the release date is in just 'year' format, or 'year-month-day' format. Only the year is needed.
+        if(release["first-release-date"].length >= 4) releaseYear = release["first-release-date"].substring(0,4)
+        if(releaseYear == null) return
+
+        let isNotAlbum = 
+            release["primary-type"] !== "Album" 
+            || release["secondary-types"].includes("Demo") 
+            || release["secondary-types"].includes("Live")
+
+        if(isNotAlbum) return
+                
+        releaseYear = Number(releaseYear)
+        if(releaseYear < albumDebutYear || albumDebutYear == null) 
+            albumDebutYear = releaseYear
+    })
+        
+    return albumDebutYear    
+}
+
+
+
+// Gets a random image from an artist's release groups.
+// Recursively executes until an image is successfully found, as some release groups have no image.
+// Returns 'null' if no release groups have an image.
+async function getArtistImageUrl(artistMusicBrainzReleaseGroups) {
+    if(artistMusicBrainzReleaseGroups.length === 0) return null
+    let indexToCheck = Math.floor(Math.random() * artistMusicBrainzReleaseGroups.length)
+
+    try{
+        const Result = await fetch(`https://coverartarchive.org/release-group/${artistMusicBrainzReleaseGroups[indexToCheck].id}`)
+        const Response = await Result.json()
+
+        const thumbnails = Response.images[0].thumbnails
+        return thumbnails["250"] ?? thumbnails.small ?? Response.images[0].image
+    }
+    catch(error) {
+        // Remove the release group that had no image, and get another random group.
+        artistMusicBrainzReleaseGroups.splice(indexToCheck,1)
+        return await getArtistImageUrl(artistMusicBrainzReleaseGroups)
+    }
 }
 
 
@@ -112,7 +145,7 @@ async function getTags(musicBrainzArtist) {
         let result = await fetch(`http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&mbid=${musicBrainzArtist.id}&api_key=0d233a8d757fa7ab78f3a5605a7567af&format=json`)
         let response = await result.json()
         
-        // If the is no artist listed on last.fm under the specified MusicBrainz id, a search by name will be preformed instead. 
+        // If the is no artist listed on last.fm under the specified MusicBrainz id, a search by name will be preformed instead.
         if(response.error) {
             result = await fetch(`http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${musicBrainzArtist.name}&api_key=0d233a8d757fa7ab78f3a5605a7567af&format=json`)
             response = await result.json()
@@ -169,18 +202,23 @@ async function constructArtistProfile(selectedArtist) {
     let artistType
     if(selectedArtist.type === "Person") artistType = "Individual"
     if(selectedArtist.type === "Group") artistType = "Group"
-    
+
+    let releaseGroups = await getArtistReleaseGroups(selectedArtist.id)
+
     let artist = new Artist(
         selectedArtist.name,
         selectedArtist.id,
         selectedArtist.gender,
         artistType,
         await getTags(selectedArtist),
-        await getArtistAlbumDebut(selectedArtist.id),
-        selectedArtist.area ? await getCountry(selectedArtist.area) : null
+        getArtistAlbumDebut(releaseGroups),
+        selectedArtist.area ? await getCountry(selectedArtist.area) : null,
+        await getArtistImageUrl(releaseGroups) ?? "no image"
     )
 
     console.log(artist)
+
+    document.querySelector("#selected-artist").src=artist.imageUrl
 }
 
 
