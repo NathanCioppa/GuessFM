@@ -1,6 +1,7 @@
 
 import { Artist } from "./Artist.js"
 import { constructArtistProfile } from "./requests.js"
+import { ArtistBlock } from "./ArtistBlock.js"
 
 let currentlyDisplayedArtists = []
 let guesses = []
@@ -66,6 +67,10 @@ function setSecretArtist(artist) {
 
 function guessArtist(artist) {
     if(checkNameMatchesSecret(artist.name)) return winGame()
+
+    let guessesDisplay = document.querySelector('#guesses')
+    
+    guessesDisplay.append(new ArtistBlock(artist))
 }
 
 function winGame() {

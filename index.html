@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GuessFM</title>
     <link rel="stylesheet" href="index.css">
+    <script type="module" src="ArtistBlock.js"></script>
     <script src="index.js" type="module"></script>
 </head>
 <body>
@@ -20,6 +21,13 @@
         
     </div>
 
+    <div class="artist">
+        <div class="name">Artist Name</div>
+        <div class="info">
+            <div class="gender">Gender: <span>Male</span></div>
+        </div>
+    </div>
+ 
     <img id="selected-artist"/>
     <script type="module">
         import {submitSearch, selectArtist} from './index.js'

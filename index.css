@@ -32,10 +32,16 @@
 
 #guesses{
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
 }
 
-.artist-block{
+artist-block{
+    display: flex;
+    flex-direction: column;
+    margin: 0.5em;
+}
+
+artist-block .artist{
     display: flex;
     flex-direction: column;
 }
