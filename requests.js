@@ -19,16 +19,16 @@ async function getTags(musicBrainzArtist) {
     // If there are not 5 tags listed on the artist's MusicBrainz profile, then tags will be gotten from their Last.fm profile.
     // Last.fm never gives more than 5 tags, and rarely gives less than 5.
     try{
-        let result = await fetch(`http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&mbid=${musicBrainzArtist.id}&api_key=0d233a8d757fa7ab78f3a5605a7567af&format=json`)
-        let response = await result.json()
+        let artistInfoRequest = await fetch(`http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&mbid=${musicBrainzArtist.id}&api_key=0d233a8d757fa7ab78f3a5605a7567af&format=json`)
+        let artistInfo = await artistInfoRequest.json()
         
         // If the is no artist listed on last.fm under the specified MusicBrainz id, a search by name will be preformed instead.
-        if(response.error) {
-            result = await fetch(`http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${musicBrainzArtist.name}&api_key=0d233a8d757fa7ab78f3a5605a7567af&format=json`)
-            response = await result.json()
+        if(artistInfo.error) {
+            artistInfoRequest = await fetch(`http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${musicBrainzArtist.name}&api_key=0d233a8d757fa7ab78f3a5605a7567af&format=json`)
+            artistInfo = await artistInfoRequest.json()
         }
 
-        response.artist.tags.tag.map(tag => {
+        artistInfo.artist.tags.tag.map(tag => {
             topTags.push(tag.name)
         })
     }
@@ -73,17 +73,17 @@ function getArtistAlbumDebut(artistMusicBrainzReleaseGroups) {
     let albumDebutYear
 
     artistMusicBrainzReleaseGroups.map(release => {
-        let releaseYear
-        // Sometimes, the release date is in just 'year' format, or 'year-month-day' format. Only the year is needed.
-        if(release["first-release-date"].length >= 4) releaseYear = release["first-release-date"].substring(0,4)
-        if(releaseYear == null) return
-
         let isNotAlbum = 
             release["primary-type"] !== "Album" 
             || release["secondary-types"].includes("Demo") 
             || release["secondary-types"].includes("Live")
 
         if(isNotAlbum) return
+
+        let releaseYear
+        // Sometimes, the release date is in just 'year' format, or 'year-month-day' format. Only the year is needed.
+        if(release["first-release-date"].length >= 4) releaseYear = release["first-release-date"].substring(0,4)
+        if(releaseYear == null) return
                 
         releaseYear = Number(releaseYear)
         if(releaseYear < albumDebutYear || albumDebutYear == null) 
@@ -95,7 +95,7 @@ function getArtistAlbumDebut(artistMusicBrainzReleaseGroups) {
 
 
 
-// Recursively searches through related areas until the country is found in cases where the area is not a country .
+// Recursively searches through related areas until the country is found in cases where the area is not a country.
 async function getCountry(musicBrainzArea) {
     if(musicBrainzArea.type === "Country") return musicBrainzArea.name
     let searchId
@@ -119,9 +119,9 @@ async function getCountry(musicBrainzArea) {
     else {searchId = musicBrainzArea.id}
 
     try{
-        const Result = await fetch(`https://musicbrainz.org/ws/2/area/${searchId}?inc=area-rels&fmt=json`)
-        const Response = await Result.json()
-        return await getCountry(Response)
+        const AreaRequest = await fetch(`https://musicbrainz.org/ws/2/area/${searchId}?inc=area-rels&fmt=json`)
+        const Area = await AreaRequest.json()
+        return await getCountry(Area)
     }
     catch(error) {console.log(error)}
     
@@ -138,11 +138,11 @@ async function getArtistImageUrl(artistMusicBrainzReleaseGroups) {
     let indexToCheck = Math.floor(Math.random() * artistMusicBrainzReleaseGroups.length)
 
     try{
-        const Result = await fetch(`https://coverartarchive.org/release-group/${artistMusicBrainzReleaseGroups[indexToCheck].id}`)
-        const Response = await Result.json()
+        const ReleaseArtRequest = await fetch(`https://coverartarchive.org/release-group/${artistMusicBrainzReleaseGroups[indexToCheck].id}`)
+        const ReleaseArt = await ReleaseArtRequest.json()
 
-        const thumbnails = Response.images[0].thumbnails
-        return thumbnails["250"] ?? thumbnails.small ?? Response.images[0].image
+        const thumbnails = ReleaseArt.images[0].thumbnails
+        return thumbnails["250"] ?? thumbnails.small ?? ReleaseArt.images[0].image
     }
     catch(error) {
         // Remove the release group that had no image, and get another random group.
@@ -153,7 +153,7 @@ async function getArtistImageUrl(artistMusicBrainzReleaseGroups) {
 
 
 
-// Creates the Artist object that will be used in the game.
+// Creates an Artist object that will be used in the game.
 export async function constructArtistProfile(selectedArtist) {
     let artistType
     if(selectedArtist.type === "Person") artistType = "Individual"

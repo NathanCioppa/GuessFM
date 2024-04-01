@@ -3,28 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>guessfm</title>
+    <title>GuessFM</title>
     <link rel="stylesheet" href="index.css">
     <script src="index.js" type="module"></script>
 </head>
 <body>
     <input type="text" id="search-artist-input">
-    <button id="search-artist-btn">search</button>
+    <button id="submit-artist-search-btn">search</button>
     
 
     <div id="artist-search-results">
         
     </div>
 
-    <div id="conflicts" width="250" height="250">
-
+    <div id="guesses">
+        
     </div>
 
     <img id="selected-artist"/>
     <script type="module">
-        import {searchMusicBrainz, selectArtist} from './index.js'
+        import {submitSearch, selectArtist} from './index.js'
 
-        document.querySelector('#search-artist-btn').addEventListener('click',  () => searchMusicBrainz(document.querySelector('#search-artist-input').value))
+        document.querySelector('#submit-artist-search-btn').addEventListener('click',  () => submitSearch(document.querySelector('#search-artist-input').value))
 
         document.querySelector('#artist-search-results').addEventListener('click', event => {
             let target = event.target

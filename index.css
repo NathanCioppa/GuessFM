@@ -29,3 +29,13 @@
     width: 3rem;
     height: 3rem;
 }
+
+#guesses{
+    display: flex;
+    flex-direction: column;
+}
+
+.artist-block{
+    display: flex;
+    flex-direction: column;
+}
