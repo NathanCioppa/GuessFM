@@ -1,3 +1,11 @@
+html{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    text-align: center;
+}
+
 #artist-search-results{
     width:20rem;
     height: 20rem;
@@ -38,10 +46,71 @@
 artist-block{
     display: flex;
     flex-direction: column;
-    margin: 0.5em;
+    
 }
 
-artist-block .artist{
+.artist{
     display: flex;
     flex-direction: column;
+    margin: 0.5em;
+    padding: 1em;
+    border: 1px solid black;
+    border-radius: 0.5em;
+    max-width: 30rem;
+    font-size: 1rem;
+}
+
+.name {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+    display: flex;
+
+}
+
+.info{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.artist-attribute{
+    border: 1px solid gray;
+    padding:  0.2em 1em 1em;
+    border-radius: 0.75em;
+    margin: 0.2em;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    height: fit-content;
+    
+
+}
+
+.label{
+    font-size: 0.75em;
+    color: gray;
+}
+
+.tag{
+    font-size: 0.8em;
+    padding: 1em;
+}
+
+.tags{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.artist-img{
+    max-width: 3em;
+    max-height: 3em;
+    clip-path: circle();
+}
+.artist-img-container{
+    border-right: 1px solid gray;
+    margin-right: 0.25em;
+    padding-right: 0.25em;
+    display: flex;
 }

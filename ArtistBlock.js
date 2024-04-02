@@ -34,7 +34,7 @@ export class ArtistBlock extends HTMLElement {
         const ImageUrl = this.imageUrl// || NA
 
         this.innerHTML = `
-        <div class="artist">
+        
             ${Name ? `<span>Name: ${Name}</span>` : ''}
             ${Gender ? `<span>Gender: ${Gender}</span>` :''}
             ${Type ? `<span>Type: ${Type}</span>`: ''}
@@ -42,7 +42,7 @@ export class ArtistBlock extends HTMLElement {
             <span>Debut Album Release Year: ${DebutAlbumYear}</span>
             ${Country ? `<span>Country: ${Country}</span>` : ''}
             ${ImageUrl ? `<span>${ImageUrl}</span>` : ''}
-        </div>
+        
         `
     }
 }
