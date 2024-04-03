@@ -24,25 +24,36 @@ export class ArtistBlock extends HTMLElement {
     }
 
     render() {
-        //const NA = "Not Available"
-        const Name = this.name// || NA
-        const Gender = this.gender// || NA
-        const Type = this.type// || NA
-        const Tags = this.tags// || NA
+        const Name = this.name
+        const Gender = this.gender
+        const Type = this.type
+        const Tags = this.tags || []
         const DebutAlbumYear = this.debutAlbumYear || "No Debut Album!"
-        const Country = this.country// || NA
-        const ImageUrl = this.imageUrl// || NA
+        const Country = this.country
+        const ImageUrl = this.imageUrl
 
         this.innerHTML = `
-        
-            ${Name ? `<span>Name: ${Name}</span>` : ''}
-            ${Gender ? `<span>Gender: ${Gender}</span>` :''}
-            ${Type ? `<span>Type: ${Type}</span>`: ''}
-            ${Tags ? `<div>Tags: ${Tags.map(tag => {return tag})}</div>` : ''}
-            <span>Debut Album Release Year: ${DebutAlbumYear}</span>
-            ${Country ? `<span>Country: ${Country}</span>` : ''}
-            ${ImageUrl ? `<span>${ImageUrl}</span>` : ''}
-        
+        <div class="name">
+            <div class="artist-img-container">
+                <img class="artist-img" src="${ImageUrl}" alt="">
+            </div>
+            ${Name}
+        </div>
+        <div class="info">
+            <div class="main-info">
+                ${Gender ? `<div class="gender attribute"><span class="label">Gender:</span> <span>${Gender}</span></div>` :''}
+                ${Type ? `<div class="type attribute"><span class="label">Type:</span> <span>${Type}</span></div>` : ''}
+
+                <div class="debut attribute"><span class="label">Debut Album:</span> <span>${DebutAlbumYear}</span></div>
+                ${Country ? `<div class="country attribute"><span class="label">Country:</span> <span>${Country}</span></div>` : ''}
+            </div>
+            <div class="tags">
+            ${Tags.map(tag => {
+                let tagElement = `<div class="tag attribute">${tag}</div>`
+                return tagElement
+            }).join('')}
+            </div>
+        </div> 
         `
     }
 }

@@ -158,6 +158,8 @@ export async function constructArtistProfile(selectedArtist) {
     let artistType
     if(selectedArtist.type === "Person") artistType = "Individual"
     if(selectedArtist.type === "Group") artistType = "Group"
+    
+    if(selectedArtist.gender) { selectedArtist.gender = selectedArtist.gender[0].toUpperCase() + selectedArtist.gender.slice(1) }
 
     let releaseGroups = await getArtistReleaseGroups(selectedArtist.id)
 
@@ -171,7 +173,6 @@ export async function constructArtistProfile(selectedArtist) {
         selectedArtist.area ? await getCountry(selectedArtist.area) : null,
         await getArtistImageUrl(releaseGroups)
     )
-
     return artist
 }
 
