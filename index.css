@@ -128,3 +128,18 @@ artist-block .tag{
 .correct{
     background-color: rgba(22, 255, 22, 0.5);
 }
+
+.arrow{
+    display: none;
+    line-height: 1ch;
+}
+
+.too-low .arrow {
+    display:inline-block;
+    transform: rotate(-90deg);
+    
+}
+.too-high .arrow {
+    display:inline-block;
+    transform: rotate(90deg);
+}

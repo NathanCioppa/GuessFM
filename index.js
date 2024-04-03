@@ -92,32 +92,64 @@ function checkNameMatchesSecret(guessName) {
 // based on whether the attribute matches or is close to the secret artists's corresponding attribute.
 // ie. makes attributes green when correct, or yellow when close.
 function compareToSecret(artistGuess) {
-    let mainInfoAttributes = ['gender', 'type', 'debutAlbumYear', 'country']
+    compareMainAttributesToSecret(artistGuess)
+    compareTagsToSecret(artistGuess)
+}
 
-    mainInfoAttributes.map(attributeName => {
+function compareMainAttributesToSecret(artistGuess) {
+    const MainInfoAttributes = ['gender', 'type', 'debutAlbumYear', 'country']
+    let shouldCheckDebutCloseness = true
+
+    // Check for exact matches in main attributes
+    MainInfoAttributes.map(attributeName => {
         let artistAttributeElement = artistGuess.artistBlock.querySelector('.info .main-info .'+attributeName)
-        if(artistAttributeElement && artistGuess.artistObject[attributeName] === secretArtist[attributeName])
+        if(artistAttributeElement && artistGuess.artistObject[attributeName] === secretArtist[attributeName]) {
             artistAttributeElement.classList.add('correct')
+
+            attributeName === 'debutAlbumYear' && (shouldCheckDebutCloseness = false)
+        }
     })
+    if(!shouldCheckDebutCloseness) return
 
+    // Check for close guesses in debut album year
+    // Close guesses will have css classes added to them so that they display as close and either too high or low
+    // ie. close guess that is too low will be yellow with an up arrow
+    const ClosenessTolerance = 10
+    const GuessDebut = artistGuess.artistObject.debutAlbumYear
+    let guessDebutElement = artistGuess.artistBlock.querySelector('.debutAlbumYear')
+    
+    const DebutCloseTooLow = GuessDebut < secretArtist.debutAlbumYear && GuessDebut >= secretArtist.debutAlbumYear - ClosenessTolerance
+    if(DebutCloseTooLow) return guessDebutElement.classList.add('close', 'too-low')
+        
+    const DebutCloseTooHigh = GuessDebut > secretArtist.debutAlbumYear && GuessDebut <= secretArtist.debutAlbumYear + ClosenessTolerance
+    if(DebutCloseTooHigh) guessDebutElement.classList.add('close', 'too-high')
+}
+
+function compareTagsToSecret(artistGuess) {
     let secretTagsLowercase = []
-    secretArtist.tags.map(tag => {secretTagsLowercase.push(tag.toLowerCase())})
+    secretArtist.tags.map(tag => { secretTagsLowercase.push(tag.toLowerCase())} )
 
-    let guessTags = artistGuess.artistBlock.querySelectorAll('.tags .tag')
+    let guessTagElements = artistGuess.artistBlock.querySelectorAll('.tags .tag')
+    if(!guessTagElements) return
 
-    if(guessTags) for(let i=0; i<secretTagsLowercase.length; i++) {
-        guessTags.includes
-    }
+    for(let i=0; i<guessTagElements.length; i++) {
+        let tagElement = guessTagElements[i]
 
-    if(guessTags) for(let i=0; i<guessTags.length; i++) {
-        let tag = guessTags[i]
-        if(secretTagsLowercase.includes(tag.innerHTML.toLowerCase())) {
-            tag.classList.add('correct')
+        if(secretTagsLowercase.includes(tagElement.innerHTML.toLowerCase())) {
+            tagElement.classList.add('correct')
             continue
         }
+        
         secretTagsLowercase.map(secretTag => {
-            if(tag.innerHTML.toLowerCase().includes(secretTag)) tag.classList.add('close')
+            // If a guessed tag's content contains the value of any of the secret artist's tags, it will be considered close.
+            // ie. guessed tag 'indie pop' will be close if the secret artist has either 'pop' or 'indie' as a tag.
+            if(tagElement.innerHTML.toLowerCase().includes(secretTag)) 
+                tagElement.classList.add('close')
+
+            // If a secretTag's contents contain the value of a guessed tag, it will be considered close.
+            // ie. guessed artist tag 'punk' will be close if the secret artist has the tag 'pop punk'.
+            if(secretTag.includes(tagElement.innerHTML.toLowerCase()))
+                tagElement.classList.add('close')
         })
     }
-    
 }

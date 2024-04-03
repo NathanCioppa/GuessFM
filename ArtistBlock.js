@@ -44,7 +44,7 @@ export class ArtistBlock extends HTMLElement {
                 ${Gender ? `<div class="gender attribute"><span class="label">Gender:</span> <span class="value">${Gender}</span></div>` :''}
                 ${Type ? `<div class="type attribute"><span class="label">Type:</span> <span class="value">${Type}</span></div>` : ''}
 
-                <div class="debutAlbumYear attribute"><span class="label">Debut Album:</span> <span class="value">${DebutAlbumYear}</span></div>
+                <div class="debutAlbumYear attribute"><span class="label">Debut Album:</span> <span class="value">${DebutAlbumYear}&nbsp;<span class="arrow">></span></span></div>
                 ${Country ? `<div class="country attribute"><span class="label">Country:</span> <span class="value">${Country}</span></div>` : ''}
             </div>
             <div class="tags">
