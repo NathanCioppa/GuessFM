@@ -10,7 +10,7 @@ export class ArtistBlock extends HTMLElement {
             this.type = artist.type
             this.tags = artist.tags
             this.debutAlbumYear = artist.debutAlbumYear
-            this.country = artist.area
+            this.country = artist.country
             this.imageUrl = artist.imageUrl
         }
 
@@ -41,11 +41,11 @@ export class ArtistBlock extends HTMLElement {
         </div>
         <div class="info">
             <div class="main-info">
-                ${Gender ? `<div class="gender attribute"><span class="label">Gender:</span> <span>${Gender}</span></div>` :''}
-                ${Type ? `<div class="type attribute"><span class="label">Type:</span> <span>${Type}</span></div>` : ''}
+                ${Gender ? `<div class="gender attribute"><span class="label">Gender:</span> <span class="value">${Gender}</span></div>` :''}
+                ${Type ? `<div class="type attribute"><span class="label">Type:</span> <span class="value">${Type}</span></div>` : ''}
 
-                <div class="debut attribute"><span class="label">Debut Album:</span> <span>${DebutAlbumYear}</span></div>
-                ${Country ? `<div class="country attribute"><span class="label">Country:</span> <span>${Country}</span></div>` : ''}
+                <div class="debutAlbumYear attribute"><span class="label">Debut Album:</span> <span class="value">${DebutAlbumYear}</span></div>
+                ${Country ? `<div class="country attribute"><span class="label">Country:</span> <span class="value">${Country}</span></div>` : ''}
             </div>
             <div class="tags">
             ${Tags.map(tag => {

@@ -68,9 +68,11 @@ function setSecretArtist(artist) {
 function guessArtist(artist) {
     if(checkNameMatchesSecret(artist.name)) return winGame()
 
-    let guessesDisplay = document.querySelector('#guesses')
+    let artistBlock = new ArtistBlock(artist)
+    guesses.push({artistObject: artist, artistBlock:artistBlock})
+    document.querySelector('#guesses').append(artistBlock)
     
-    guessesDisplay.append(new ArtistBlock(artist))
+    compareToSecret(guesses[guesses.length - 1])
 }
 
 function winGame() {
@@ -84,4 +86,38 @@ function loseGame() {
 function checkNameMatchesSecret(guessName) {
     if(!secretArtist || !secretArtist.name) return false
     return guessName.toLowerCase() === secretArtist.name.toLowerCase()
+}
+
+// Responsible for assigning classes to guessed artists's attributes,
+// based on whether the attribute matches or is close to the secret artists's corresponding attribute.
+// ie. makes attributes green when correct, or yellow when close.
+function compareToSecret(artistGuess) {
+    let mainInfoAttributes = ['gender', 'type', 'debutAlbumYear', 'country']
+
+    mainInfoAttributes.map(attributeName => {
+        let artistAttributeElement = artistGuess.artistBlock.querySelector('.info .main-info .'+attributeName)
+        if(artistAttributeElement && artistGuess.artistObject[attributeName] === secretArtist[attributeName])
+            artistAttributeElement.classList.add('correct')
+    })
+
+    let secretTagsLowercase = []
+    secretArtist.tags.map(tag => {secretTagsLowercase.push(tag.toLowerCase())})
+
+    let guessTags = artistGuess.artistBlock.querySelectorAll('.tags .tag')
+
+    if(guessTags) for(let i=0; i<secretTagsLowercase.length; i++) {
+        guessTags.includes
+    }
+
+    if(guessTags) for(let i=0; i<guessTags.length; i++) {
+        let tag = guessTags[i]
+        if(secretTagsLowercase.includes(tag.innerHTML.toLowerCase())) {
+            tag.classList.add('correct')
+            continue
+        }
+        secretTagsLowercase.map(secretTag => {
+            if(tag.innerHTML.toLowerCase().includes(secretTag)) tag.classList.add('close')
+        })
+    }
+    
 }

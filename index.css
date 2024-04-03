@@ -20,6 +20,10 @@ html{
     margin-bottom: 0.25rem;
 
 }
+.artist-search-result:hover{
+    background-color:rgb(226, 226, 226);
+    cursor:pointer;
+}
 
 .artist-search-result .artist-name{
 
@@ -115,4 +119,12 @@ artist-block .tags{
 artist-block .tag{
     font-size: 0.8em;
     padding: 1em;
+}
+
+.close{
+    background-color: rgba(255, 208, 0, 0.5);
+}
+
+.correct{
+    background-color: rgba(22, 255, 22, 0.5);
 }
