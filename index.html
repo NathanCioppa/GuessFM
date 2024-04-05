@@ -9,18 +9,13 @@
     <script src="index.js" type="module"></script>
 </head>
 <body>
-    <input type="text" id="search-artist-input">
+    <input type="text" id="search-artist-input" placeholder="Search for an artist to guess">
     <button id="submit-artist-search-btn">search</button>
 
-    <div id="artist-search-results">
-        
-    </div>
+    <div id="artist-search-results"></div>
 
-    <div id="guesses">
-        
-    </div>
- 
-    <img id="selected-artist"/>
+    <div id="guesses"></div>
+
     <script type="module">
         import {submitSearch, selectArtist} from './index.js'
 

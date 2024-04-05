@@ -25,7 +25,6 @@ async function searchMusicBrainz(query) {
     try {
         const SearchRequest = await fetch(`https://musicbrainz.org/ws/2/artist/?query=${query}&fmt=json`)
         const SearchResults = await SearchRequest.json()
-        console.log(SearchResults)
         if(SearchResults.count && SearchResults.count > 0)
             displayArtistSearchResults(SearchResults.artists)
     } 
@@ -58,11 +57,12 @@ export async function selectArtist(artistElement) {
         }
     })
     StyleHelper.hideSearchResults()
+    StyleHelper.randomizeArtistSearchPlaceholder()
+    if(isChoosingSecret) StyleHelper.clearArtistSearchInput()
     
     if(checkNameMatchesSecret(selectedArtist.name)) return winGame()
 
     let artist = await constructArtistProfile(selectedArtist)
-    console.log(artist)
 
     return isChoosingSecret 
     ? setSecretArtist(artist) 
@@ -80,6 +80,8 @@ function guessArtist(artist) {
     let artistBlock = new ArtistBlock(artist)
     guesses.push({artistObject: artist, artistBlock:artistBlock})
     document.querySelector('#guesses').append(artistBlock)
+
+    StyleHelper.clearArtistSearchInput()
     
     compareToSecret(guesses[guesses.length - 1])
 }

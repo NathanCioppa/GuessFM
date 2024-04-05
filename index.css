@@ -8,6 +8,27 @@ body{
 
 
 
+#search-artist-input{
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+    outline:none;
+    padding-bottom: 3px;
+    caret-color: white;
+    font-size: 2rem;
+    color: white;
+    transition: border 0.25s;
+}
+#search-artist-input:focus{
+    border-bottom: 2px solid white;
+}
+#search-artist-input::placeholder{
+    font-size: 1.75rem;
+}
+
+
+
+
 #artist-search-results{
     width:20rem;
     height: var(--search-results-container-height);
@@ -23,6 +44,7 @@ body{
 #artist-search-results::-webkit-scrollbar{
     display: none;
 }
+
 
 .artist-search-result{
     display: flex;
@@ -43,6 +65,7 @@ body{
 .artist-search-result .artist-name{
     font-weight: bold;
 }
+
 .artist-search-result .artist-description{
     font-size: 0.75em;
     font-style: italic;
@@ -50,10 +73,6 @@ body{
 }
 
 
-.resultItemImage{
-    width: 3rem;
-    height: 3rem;
-}
 
 #guesses{
     display: flex;
@@ -61,19 +80,18 @@ body{
 }
 
 
-
 artist-block{
     display: flex;
     flex-direction: column;
     margin: 0.5em;
     padding: 1em;
-    border: 1px solid rgb(0, 0, 0);
     border-radius: 0.5em;
     width: fit-content;
     max-width: min(30rem, 80vw);
     font-size: 1rem;
     animation: show-artist-block 0.5s forwards;
     scale: 0;
+    background-color: rgb(27, 18, 41);
 }
 
 artist-block .name {
@@ -123,9 +141,11 @@ artist-block .attribute{
     height: fit-content;
     text-align: center;
     transition: transform 0.5s;
+    font-weight: bold;
 }
 artist-block .attribute .label{
     font-size: 0.75em;
+    font-weight: normal;
 }
 
 artist-block .tags{
@@ -141,7 +161,6 @@ artist-block .tag{
 .close{
     animation: flip-artist-attribute-close 0.5s 0.75s forwards;
 }
-
 .correct{
     animation: flip-artist-attribute-correct 0.5s 0.75s forwards;
 }
@@ -150,7 +169,6 @@ artist-block .tag{
     display: none;
     line-height: 1ch;
 }
-
 .too-low .arrow {
     display:inline-block;
     transform: rotate(-90deg);
@@ -186,12 +204,14 @@ artist-block .tag{
     100% {
         transform: rotateX(360deg);
         background-color: rgb(214, 157, 0);
+        border: 1px solid rgb(214, 157, 0);
     }
 }
 
 @keyframes flip-artist-attribute-correct {
     100% {
         transform: rotateX(360deg);
-        background-color: rgba(22, 255, 22, 0.5);
+        background-color: rgb(20, 163, 20);
+        border: 1px solid rgb(20, 163, 20);
     }
 }
