@@ -11,7 +11,6 @@
 <body>
     <input type="text" id="search-artist-input">
     <button id="submit-artist-search-btn">search</button>
-    
 
     <div id="artist-search-results">
         
@@ -33,6 +32,11 @@
                 target = target.parentElement;
             }
             selectArtist(target)
+        })
+
+        document.addEventListener('keypress', key => {
+            if(key.code === "Enter" && document.activeElement === document.querySelector('#search-artist-input'))
+                submitSearch(document.querySelector('#search-artist-input').value)
         })
     </script>
 </body>

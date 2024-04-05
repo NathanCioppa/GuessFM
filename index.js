@@ -2,6 +2,7 @@
 import { Artist } from "./Artist.js"
 import { constructArtistProfile } from "./requests.js"
 import { ArtistBlock } from "./ArtistBlock.js"
+import * as StyleHelper from "./styleHelper.js"
 
 let currentlyDisplayedArtists = []
 let guesses = []
@@ -14,14 +15,19 @@ const MaxGuesses = 10
 
 export function submitSearch(query) {
     if(!isChoosingSecret && checkNameMatchesSecret(query)) return winGame()
-    searchMusicBrainz(query)
+    if(query.trim() !== "") {
+        StyleHelper.hideSearchResults()
+        searchMusicBrainz(query)
+    }
 }
 
 async function searchMusicBrainz(query) {
     try {
         const SearchRequest = await fetch(`https://musicbrainz.org/ws/2/artist/?query=${query}&fmt=json`)
         const SearchResults = await SearchRequest.json()
-        displayArtistSearchResults(SearchResults.artists)
+        console.log(SearchResults)
+        if(SearchResults.count && SearchResults.count > 0)
+            displayArtistSearchResults(SearchResults.artists)
     } 
     catch (error) {console.log(error)}
 }
@@ -36,9 +42,11 @@ function displayArtistSearchResults(artists) {
         ResultsDisplay.innerHTML+=`
         <div class="artist-search-result" artist-name="${artist.name}" artist-description="${artist.disambiguation}" musicbrainz-id="${artist.id}">
         <span class="artist-name">${artist.name}</span>
-        <span class="artist-description">${artist.disambiguation ?? ' - '}</span>
+        <span class="artist-description">${artist.disambiguation ?? '~'}</span>
         </div>
     `})
+
+    StyleHelper.showSearchResults()
 }
 
 export async function selectArtist(artistElement) {
@@ -49,6 +57,7 @@ export async function selectArtist(artistElement) {
             return
         }
     })
+    StyleHelper.hideSearchResults()
     
     if(checkNameMatchesSecret(selectedArtist.name)) return winGame()
 

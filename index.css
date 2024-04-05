@@ -1,39 +1,54 @@
 html{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+}
+body{
+    background: linear-gradient(to bottom right, var(--background-color), var(--background-gradient-color)) fixed;
 }
 
 
 
 #artist-search-results{
     width:20rem;
-    height: 20rem;
+    height: var(--search-results-container-height);
     margin: 1rem;
-    border: 1px solid black;
+    border-radius: 0.25rem;
+    background-color: rgba(255, 255, 255, 0.05);
     overflow-y: scroll;
     overflow-x: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    transition: height 0.3s;
+}
+#artist-search-results::-webkit-scrollbar{
+    display: none;
 }
 
 .artist-search-result{
-    height: 3rem;
     display: flex;
     flex-direction: column;
-    margin-bottom: 0.25rem;
-
+    padding: 0.5rem;
+    background: linear-gradient(to right, var(--myColor1), transparent);
+    transition: --myColor1 0.35s;
+    border-radius: 0.25rem 0.25rem 0;
 }
 .artist-search-result:hover{
-    background-color:rgb(226, 226, 226);
+    --myColor1: rgba(255, 255, 255, 0.1);
     cursor:pointer;
+}
+.artist-search-result:active{
+    --myColor1: rgba(255, 255, 255, 0.2);
 }
 
 .artist-search-result .artist-name{
-
+    font-weight: bold;
 }
 .artist-search-result .artist-description{
     font-size: 0.75em;
+    font-style: italic;
+    color: rgb(199, 199, 199);
 }
-.resultItem:hover{
-    background-color: rgb(226, 226, 226);
-}
+
 
 .resultItemImage{
     width: 3rem;
@@ -57,6 +72,8 @@ artist-block{
     width: fit-content;
     max-width: min(30rem, 80vw);
     font-size: 1rem;
+    animation: show-artist-block 0.5s forwards;
+    scale: 0;
 }
 
 artist-block .name {
@@ -105,10 +122,10 @@ artist-block .attribute{
     width: fit-content;
     height: fit-content;
     text-align: center;
+    transition: transform 0.5s;
 }
 artist-block .attribute .label{
     font-size: 0.75em;
-    color: gray;
 }
 
 artist-block .tags{
@@ -122,11 +139,11 @@ artist-block .tag{
 }
 
 .close{
-    background-color: rgba(255, 208, 0, 0.5);
+    animation: flip-artist-attribute-close 0.5s 0.75s forwards;
 }
 
 .correct{
-    background-color: rgba(22, 255, 22, 0.5);
+    animation: flip-artist-attribute-correct 0.5s 0.75s forwards;
 }
 
 .arrow{
@@ -142,4 +159,39 @@ artist-block .tag{
 .too-high .arrow {
     display:inline-block;
     transform: rotate(90deg);
+}
+
+
+
+:root{
+    --background-color: rgb(10,10,10);
+    --background-gradient-color: rgb(39, 26, 58);
+
+    --search-results-container-height: 0;
+}
+
+@property --myColor1 {
+    syntax: '<color>';
+    initial-value: rgba(255, 255, 255, 0);
+    inherits: false;
+}
+
+@keyframes show-artist-block {
+    100% {
+        scale:1;
+    }
+}
+
+@keyframes flip-artist-attribute-close {
+    100% {
+        transform: rotateX(360deg);
+        background-color: rgb(214, 157, 0);
+    }
+}
+
+@keyframes flip-artist-attribute-correct {
+    100% {
+        transform: rotateX(360deg);
+        background-color: rgba(22, 255, 22, 0.5);
+    }
 }
