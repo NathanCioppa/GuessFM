@@ -23,12 +23,13 @@ export function submitSearch(query) {
 
 async function searchMusicBrainz(query) {
     try {
+        StyleHelper.showLoadingAnimation()
         const SearchRequest = await fetch(`https://musicbrainz.org/ws/2/artist/?query=${query}&fmt=json`)
         const SearchResults = await SearchRequest.json()
         if(SearchResults.count && SearchResults.count > 0)
             displayArtistSearchResults(SearchResults.artists)
     } 
-    catch (error) {console.log(error)}
+    catch (error) {StyleHelper.hideLoadingAnimation(); console.log(error)}
 }
 
 function displayArtistSearchResults(artists) {
@@ -45,6 +46,7 @@ function displayArtistSearchResults(artists) {
         </div>
     `})
 
+    StyleHelper.hideLoadingAnimation()
     StyleHelper.showSearchResults()
 }
 
@@ -62,7 +64,9 @@ export async function selectArtist(artistElement) {
     
     if(checkNameMatchesSecret(selectedArtist.name)) return winGame()
 
+    StyleHelper.showLoadingAnimation()
     let artist = await constructArtistProfile(selectedArtist)
+    StyleHelper.hideLoadingAnimation()
 
     return isChoosingSecret 
     ? setSecretArtist(artist) 

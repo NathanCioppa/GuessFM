@@ -159,7 +159,7 @@ export async function constructArtistProfile(selectedArtist) {
     if(selectedArtist.type === "Person") artistType = "Individual"
     if(selectedArtist.type === "Group") artistType = "Group"
     
-    if(selectedArtist.gender) { selectedArtist.gender = selectedArtist.gender[0].toUpperCase() + selectedArtist.gender.slice(1) }
+    if(selectedArtist.gender) selectedArtist.gender = selectedArtist.gender[0].toUpperCase() + selectedArtist.gender.slice(1)
 
     let releaseGroups = await getArtistReleaseGroups(selectedArtist.id)
 

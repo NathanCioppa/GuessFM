@@ -6,6 +6,20 @@ body{
     background: linear-gradient(to bottom right, var(--background-color), var(--background-gradient-color)) fixed;
 }
 
+main {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#search{
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1rem;
+}
+
 
 
 #search-artist-input{
@@ -28,13 +42,27 @@ body{
 
 
 
+#submit-artist-search-btn{
+    font-size: 2rem;
+    padding: 0.25rem;
+    border: none;
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    transition:color 0.25s;
+}
+#submit-artist-search-btn:hover {
+    color: white;
+}
+
+
+
+
 
 #artist-search-results{
     width:20rem;
     height: var(--search-results-container-height);
-    margin: 1rem;
     border-radius: 0.25rem;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.025);
     overflow-y: scroll;
     overflow-x: hidden;
     -ms-overflow-style: none;
@@ -44,6 +72,7 @@ body{
 #artist-search-results::-webkit-scrollbar{
     display: none;
 }
+
 
 
 .artist-search-result{
@@ -73,10 +102,37 @@ body{
 }
 
 
+#loading-animation{
+    display: flex;
+    flex-direction: row;
+    transition: height 0.25s;
+    margin-top: 1em;
+    opacity: 0;
+}
+.dot{
+    display: block;
+    width: 0.5em;
+    height: 0.5em;
+    background-color: white;
+    border-radius: 1em;
+    margin: 0 0.35em;
+}
+#dot-1 { 
+    animation: pulse 1s infinite;
+}
+#dot-2{
+    animation: pulse 1s 0.25s infinite
+}
+#dot-3{
+    animation: pulse 1s 0.5s infinite
+}
+
+
 
 #guesses{
     display: flex;
     flex-direction: column-reverse;
+    align-items: center;
 }
 
 
@@ -213,5 +269,22 @@ artist-block .tag{
         transform: rotateX(360deg);
         background-color: rgb(20, 163, 20);
         border: 1px solid rgb(20, 163, 20);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        scale: 1;
+        color: white;
+    }
+
+    50% {
+        scale:1.5;
+        background-color: rgb(213, 122, 255);
+    }    
+
+    100% {
+        scale: 1;
+        color: white;
     }
 }

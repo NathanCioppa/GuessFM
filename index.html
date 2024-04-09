@@ -9,12 +9,29 @@
     <script src="index.js" type="module"></script>
 </head>
 <body>
-    <input type="text" id="search-artist-input" placeholder="Search for an artist to guess">
-    <button id="submit-artist-search-btn">search</button>
+    <main>
+        <div id="search">
+            <div>
+                <input type="text" id="search-artist-input" placeholder="Search for an artist to guess">
+                <button id="submit-artist-search-btn" title="search">&hookrightarrow;</button>
+            </div>
+            
 
-    <div id="artist-search-results"></div>
+            <div id="loading-animation">
+                <span class="dot" id="dot-1"></span>
+                <span class="dot" id="dot-2"></span>
+                <span class="dot" id="dot-3"></span>
+            </div>
+        </div>
 
-    <div id="guesses"></div>
+        <div id="artist-search-results-wrapper">
+            <div id="artist-search-results"></div>
+        </div>
+        
+
+        <div id="guesses"></div>
+    </main>
+    
 
     <script type="module">
         import {submitSearch, selectArtist} from './index.js'
