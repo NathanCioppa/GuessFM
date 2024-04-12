@@ -4,6 +4,7 @@ html{
 }
 body{
     background: linear-gradient(to bottom right, var(--background-color), var(--background-gradient-color)) fixed;
+    margin: 0;
 }
 
 main {
@@ -11,6 +12,8 @@ main {
     align-items: center;
     flex-direction: column;
 }
+
+
 
 #search{
     width: fit-content;
@@ -29,15 +32,13 @@ main {
     outline:none;
     padding-bottom: 3px;
     caret-color: white;
-    font-size: 2rem;
+    font-size: 1.75rem;
     color: white;
     transition: border 0.25s;
+    text-align: center;
 }
 #search-artist-input:focus{
     border-bottom: 2px solid white;
-}
-#search-artist-input::placeholder{
-    font-size: 1.75rem;
 }
 
 
@@ -56,6 +57,14 @@ main {
 
 
 
+#guess-count-display{
+    align-self: flex-end;
+    color: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+}
+
+
+
 
 
 #artist-search-results{
@@ -68,6 +77,7 @@ main {
     -ms-overflow-style: none;
     scrollbar-width: none;
     transition: height 0.3s;
+    margin-bottom: 1rem;
 }
 #artist-search-results::-webkit-scrollbar{
     display: none;

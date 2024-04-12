@@ -27,3 +27,11 @@ export function showLoadingAnimation() {
 export function hideLoadingAnimation() {
     document.querySelector("#loading-animation").style.opacity = '0'
 }
+
+export function showGuessCount() {
+    document.querySelector('#guess-count-display').style.opacity = 1
+}
+
+export function hideGuessCount() {
+    document.querySelector('#guess-count-display').style.opacity = 0
+}

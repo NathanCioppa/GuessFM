@@ -3,13 +3,14 @@ import { Artist } from "./Artist.js"
 import { constructArtistProfile } from "./requests.js"
 import { ArtistBlock } from "./ArtistBlock.js"
 import * as StyleHelper from "./styleHelper.js"
+import * as Errors from "./errors.js"
 
 let currentlyDisplayedArtists = []
 let guesses = []
 let isChoosingSecret = true
 let secretArtist
 const MaxGuesses = 10
-
+document.querySelector('#max-guesses').innerHTML = MaxGuesses
 
 
 
@@ -26,10 +27,13 @@ async function searchMusicBrainz(query) {
         StyleHelper.showLoadingAnimation()
         const SearchRequest = await fetch(`https://musicbrainz.org/ws/2/artist/?query=${query}&fmt=json`)
         const SearchResults = await SearchRequest.json()
+
         if(SearchResults.count && SearchResults.count > 0)
-            displayArtistSearchResults(SearchResults.artists)
+            return displayArtistSearchResults(SearchResults.artists)
+        
+        Errors.alertFailToSearch()
     } 
-    catch (error) {StyleHelper.hideLoadingAnimation(); console.log(error)}
+    catch (error) {Errors.alertFailToSearch(); console.log(error)}
 }
 
 function displayArtistSearchResults(artists) {
@@ -50,8 +54,11 @@ function displayArtistSearchResults(artists) {
     StyleHelper.showSearchResults()
 }
 
+
+
 export async function selectArtist(artistElement) {
     let selectedArtist
+    // Find the artist from the selected element in the array of displayed artists.
     currentlyDisplayedArtists.map(displayedArtist => {
         if(displayedArtist.id === artistElement.getAttribute('musicbrainz-id')) {
             selectedArtist = displayedArtist
@@ -62,6 +69,10 @@ export async function selectArtist(artistElement) {
     StyleHelper.randomizeArtistSearchPlaceholder()
     if(isChoosingSecret) StyleHelper.clearArtistSearchInput()
     
+    for(let i=0; i<guesses.length; i++) {
+        if(guesses[i].artistObject.id === selectedArtist.id) 
+            return Errors.alertDuplicateGuess()
+    }
     if(checkNameMatchesSecret(selectedArtist.name)) return winGame()
 
     StyleHelper.showLoadingAnimation()
@@ -76,26 +87,22 @@ export async function selectArtist(artistElement) {
 function setSecretArtist(artist) {
     secretArtist = artist
     isChoosingSecret = false
+    StyleHelper.showGuessCount()
 }
 
 function guessArtist(artist) {
     if(checkNameMatchesSecret(artist.name)) return winGame()
 
     let artistBlock = new ArtistBlock(artist)
-    guesses.push({artistObject: artist, artistBlock:artistBlock})
+    guesses.push({artistObject: artist, artistBlock: artistBlock})
     document.querySelector('#guesses').append(artistBlock)
 
     StyleHelper.clearArtistSearchInput()
     
     compareToSecret(guesses[guesses.length - 1])
-}
-
-function winGame() {
-    console.log('you won')
-}
-
-function loseGame() {
-
+    
+    if(guesses.length >= MaxGuesses) return loseGame()
+    document.querySelector('#guess-count').innerHTML = guesses.length+1
 }
 
 function checkNameMatchesSecret(guessName) {
@@ -103,13 +110,26 @@ function checkNameMatchesSecret(guessName) {
     return guessName.toLowerCase() === secretArtist.name.toLowerCase()
 }
 
-// Responsible for assigning classes to guessed artists's attributes,
-// based on whether the attribute matches or is close to the secret artists's corresponding attribute.
-// ie. makes attributes green when correct, or yellow when close.
+
+
+function winGame() {
+    window.alert('you won')
+}
+
+function loseGame() {
+    window.alert('you lose')
+}
+
+
+
 function compareToSecret(artistGuess) {
     compareMainAttributesToSecret(artistGuess)
     compareTagsToSecret(artistGuess)
 }
+
+// Responsible for assigning classes to guessed artists's attributes,
+// based on whether the attribute matches or is close to the secret artists's corresponding attribute.
+// ie. makes attributes green when correct, or yellow when close.
 
 function compareMainAttributesToSecret(artistGuess) {
     const MainInfoAttributes = ['gender', 'type', 'debutAlbumYear', 'country']
