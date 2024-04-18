@@ -139,6 +139,43 @@ main {
 
 
 
+#error-message-container {
+    background-color: rgb(15, 15, 15);
+    border-radius: 1em;
+    border-top-right-radius: 0;
+    color: rgb(255, 0, 0);
+    font-weight: bold;
+    transition: height 0.25s;
+    overflow: hidden;
+    height: fit-content;
+    display: var(--error-message-display);
+    position: absolute;
+    margin: 1rem;
+    padding: 1em;
+    top: 0;
+    right: 0;
+}
+
+#hide-error{
+    font-size: 1.1rem;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: transparent;
+    transition: background-color 50ms;
+    border: none;
+    color: red;
+    border-radius: 100em;
+}
+#hide-error:hover{
+    background-color: rgba(255, 255, 255, 0.1);
+}
+#hide-error:active{
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+
+
 #guesses{
     display: flex;
     flex-direction: column-reverse;
@@ -252,6 +289,7 @@ artist-block .tag{
     --background-gradient-color: rgb(39, 26, 58);
 
     --search-results-container-height: 0;
+    --error-message-display: none; 
 }
 
 @property --myColor1 {

@@ -24,6 +24,7 @@ export function submitSearch(query) {
 
 async function searchMusicBrainz(query) {
     try {
+        StyleHelper.hideErrorMessage()
         StyleHelper.showLoadingAnimation()
         const SearchRequest = await fetch(`https://musicbrainz.org/ws/2/artist/?query=${query}&fmt=json`)
         const SearchResults = await SearchRequest.json()
@@ -80,7 +81,7 @@ export async function selectArtist(artistElement) {
     StyleHelper.hideLoadingAnimation()
 
     return isChoosingSecret 
-    ? setSecretArtist(artist) 
+    ? setSecretArtist(artist)
     : guessArtist(artist)
 }
 
@@ -187,4 +188,17 @@ function compareTagsToSecret(artistGuess) {
                 tagElement.classList.add('close')
         })
     }
+}
+
+function resetGame() {
+    currentlyDisplayedArtists = []
+    guesses = []
+    document.querySelector('#guesses').innerHTML = ""
+
+    isChoosingSecret = true
+    secretArtist = undefined
+
+    StyleHelper.hideGuessCount()
+    StyleHelper.resetSearchPlaceholder()
+    
 }
