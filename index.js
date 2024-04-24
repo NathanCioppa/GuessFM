@@ -198,10 +198,11 @@ function compareTagsToSecret(artistGuess) {
     }
 }
 
-function resetGame() {
+export function resetGame() {
     currentlyDisplayedArtists = []
     guesses = []
     document.querySelector('#guesses').innerHTML = ""
+    document.querySelector("#search-artist-input").value = ""
 
     isChoosingSecret = true
     secretArtist = undefined
@@ -209,4 +210,5 @@ function resetGame() {
     StyleHelper.hideGuessCount()
     StyleHelper.resetSearchPlaceholder()
     
+    StyleHelper.hideEndScreen()
 }

@@ -48,10 +48,9 @@
     
 
     <script type="module">
-        import {submitSearch, selectArtist} from './index.js'
-        import {hideEndScreen} from './styleHelper.js'
+        import {submitSearch, selectArtist, resetGame} from './index.js'
 
-        document.querySelector('#play-again-btn').addEventListener('click', () => hideEndScreen())
+        document.querySelector('#play-again-btn').addEventListener('click', () => resetGame())
 
         document.querySelector('#submit-artist-search-btn').addEventListener('click',  () => submitSearch(document.querySelector('#search-artist-input').value))
 
