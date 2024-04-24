@@ -15,7 +15,7 @@ document.querySelector('#max-guesses').innerHTML = MaxGuesses
 
 
 export function submitSearch(query) {
-    if(!isChoosingSecret && checkNameMatchesSecret(query)) return winGame()
+    if(!isChoosingSecret && checkNameMatchesSecret(query)) return endGame(true)
     if(query.trim() !== "") {
         StyleHelper.hideSearchResults()
         searchMusicBrainz(query)
@@ -23,9 +23,9 @@ export function submitSearch(query) {
 }
 
 async function searchMusicBrainz(query) {
-    try {
-        StyleHelper.hideErrorMessage()
-        StyleHelper.showLoadingAnimation()
+    StyleHelper.hideErrorMessage()
+    StyleHelper.showLoadingAnimation()
+    try {    
         const SearchRequest = await fetch(`https://musicbrainz.org/ws/2/artist/?query=${query}&fmt=json`)
         const SearchResults = await SearchRequest.json()
 
@@ -74,15 +74,16 @@ export async function selectArtist(artistElement) {
         if(guesses[i].artistObject.id === selectedArtist.id) 
             return Errors.alertDuplicateGuess()
     }
-    if(checkNameMatchesSecret(selectedArtist.name)) return winGame()
+    if(checkNameMatchesSecret(selectedArtist.name)) return endGame(true)
 
     StyleHelper.showLoadingAnimation()
     let artist = await constructArtistProfile(selectedArtist)
     StyleHelper.hideLoadingAnimation()
 
-    return isChoosingSecret 
-    ? setSecretArtist(artist)
-    : guessArtist(artist)
+    if(artist instanceof Artist)
+        return isChoosingSecret 
+        ? setSecretArtist(artist)
+        : guessArtist(artist)
 }
 
 function setSecretArtist(artist) {
@@ -92,7 +93,7 @@ function setSecretArtist(artist) {
 }
 
 function guessArtist(artist) {
-    if(checkNameMatchesSecret(artist.name)) return winGame()
+    if(checkNameMatchesSecret(artist.name)) return endGame(true)
 
     let artistBlock = new ArtistBlock(artist)
     guesses.push({artistObject: artist, artistBlock: artistBlock})
@@ -102,7 +103,7 @@ function guessArtist(artist) {
     
     compareToSecret(guesses[guesses.length - 1])
     
-    if(guesses.length >= MaxGuesses) return loseGame()
+    if(guesses.length >= MaxGuesses) return endGame(false)
     document.querySelector('#guess-count').innerHTML = guesses.length+1
 }
 
@@ -113,12 +114,19 @@ function checkNameMatchesSecret(guessName) {
 
 
 
-function winGame() {
-    window.alert('you won')
-}
+function endGame(didWin) {
+    document.querySelector("#end-card-title").innerHTML = didWin ? "You Won!" : "<i>It was...</i>"
+    document.querySelector("#end-card-artist-container").innerHTML = ""
 
-function loseGame() {
-    window.alert('you lose')
+    let secretArtistBlock = new ArtistBlock(secretArtist)
+        secretArtistBlock.style.animation = "none"
+        secretArtistBlock.style.scale = 1
+        secretArtistBlock.style.backgroundColor = "transparent"
+    
+    document.querySelector("#end-card-artist-container").append(secretArtistBlock)
+    StyleHelper.showEndScreen()
+
+    if(didWin) compareToSecret({artistObject: secretArtist, artistBlock: secretArtistBlock})
 }
 
 

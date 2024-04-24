@@ -16,3 +16,13 @@ export function alertDuplicateGuess() {
     document.querySelector("#error-message").innerHTML = "You have already made that guess."
     showErrorMessage()
 }
+
+export function alertFindImageError() {
+    document.querySelector("#error-message").innerHTML = "An unexpected error occurred when searching for an artist image."
+    showErrorMessage()
+}
+
+export function alertFailToConstructArtist() {
+    document.querySelector("#error-message").innerHTML = "Failed to retrieve all necessary artist info. Wait a moment and try again. "
+    showErrorMessage()
+}

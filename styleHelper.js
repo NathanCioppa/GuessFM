@@ -61,3 +61,16 @@ export function hideGuessCount() {
 export function hideErrorMessage() {
     document.documentElement.style.setProperty("--error-message-display", "none")
 }
+
+
+
+
+
+export function showEndScreen() {
+    document.documentElement.style.setProperty("--end-screen-display", "flex")
+    document.documentElement.style.setProperty("--end-screen-animation", "show-end-screen 0.75s forwards")
+}
+
+export function hideEndScreen() {
+    document.documentElement.style.setProperty("--end-screen-animation", "hide-end-screen 0.5s forwards")
+}

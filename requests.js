@@ -1,7 +1,7 @@
 
 import { Artist } from "./Artist.js"
-
-
+import * as Errors from "./errors.js"
+const FatalError = -1
 
 // Gets up to 5 tags for the artist. Tags are basically genres.
 async function getTags(musicBrainzArtist) {
@@ -62,7 +62,9 @@ async function getArtistReleaseGroups(artistMusicBrainzId) {
 
         return releases
     }
-    catch (error) {console.log(error)}
+    catch (error) {
+        return FatalError
+    }
 }
 
 
@@ -137,14 +139,16 @@ async function getArtistImageUrl(artistMusicBrainzReleaseGroups) {
     if(artistMusicBrainzReleaseGroups.length === 0) return null
     let indexToCheck = Math.floor(Math.random() * artistMusicBrainzReleaseGroups.length)
 
+    let releaseArtRequest
     try{
-        const ReleaseArtRequest = await fetch(`https://coverartarchive.org/release-group/${artistMusicBrainzReleaseGroups[indexToCheck].id}`)
-        const ReleaseArt = await ReleaseArtRequest.json()
+        releaseArtRequest = await fetch(`https://coverartarchive.org/release-group/${artistMusicBrainzReleaseGroups[indexToCheck].id}`)
+        const ReleaseArt = await releaseArtRequest.json()
 
         const thumbnails = ReleaseArt.images[0].thumbnails
         return thumbnails["250"] ?? thumbnails.small ?? ReleaseArt.images[0].image
     }
     catch(error) {
+        if(!releaseArtRequest || releaseArtRequest.status != 404) return alertFindImageError()
         // Remove the release group that had no image, and get another random group.
         artistMusicBrainzReleaseGroups.splice(indexToCheck,1)
         return await getArtistImageUrl(artistMusicBrainzReleaseGroups)
@@ -162,6 +166,7 @@ export async function constructArtistProfile(selectedArtist) {
     if(selectedArtist.gender) selectedArtist.gender = selectedArtist.gender[0].toUpperCase() + selectedArtist.gender.slice(1)
 
     let releaseGroups = await getArtistReleaseGroups(selectedArtist.id)
+    if(releaseGroups === FatalError) return Errors.alertFailToConstructArtist()
 
     let artist = new Artist(
         selectedArtist.name,

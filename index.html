@@ -36,11 +36,22 @@
         </div>
 
         <div id="guesses"></div>
+
+        <div id="end-container">
+            <div id="end-card">
+                <h2 id="end-card-title"></h2>
+                <div id="end-card-artist-container"></div>
+                <button id="play-again-btn">Play Again!</button>
+            </div>
+        </div>
     </main>
     
 
     <script type="module">
         import {submitSearch, selectArtist} from './index.js'
+        import {hideEndScreen} from './styleHelper.js'
+
+        document.querySelector('#play-again-btn').addEventListener('click', () => hideEndScreen())
 
         document.querySelector('#submit-artist-search-btn').addEventListener('click',  () => submitSearch(document.querySelector('#search-artist-input').value))
 

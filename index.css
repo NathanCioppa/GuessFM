@@ -294,12 +294,62 @@ artist-block .tag{
 
 
 
+#end-container{
+    z-index: 2;
+    align-self: flex-start;
+    position:fixed;
+    display: var(--end-screen-display);
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 100vh;
+    width: 100vw;
+    animation: var(--end-screen-animation)
+}
+
+#end-card{
+    background-color: rgb(27, 18, 41);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#end-card-title {
+    margin: 0;
+    align-self: flex-start;
+}
+
+#play-again-btn{
+    font-size: 1.25rem;
+    background-color: rgb(140, 46, 163);
+    border: none;
+    padding: 0.5em;
+    color: white;
+    font-weight: bold;
+    border-radius: 0.25em;
+    scale: 1;
+    box-shadow: 3px 3px 3px black;
+    transition: scale, box-shadow, 0.25s;
+}
+#play-again-btn:hover{
+    scale: 1.05;
+    box-shadow: 6px 6px 6px black;
+}
+
+
+
 :root{
     --background-color: rgb(10,10,10);
     --background-gradient-color: rgb(39, 26, 58);
 
     --search-results-container-height: 0;
     --error-message-display: none; 
+
+    --end-screen-display: none;
+    --end-screen-animation:show-end-screen 0.75s forwards;
 }
 
 @property --myColor1 {
@@ -344,6 +394,34 @@ artist-block .tag{
     100% {
         scale: 1;
         color: white;
+    }
+}
+@keyframes show-end-screen{
+    0%{
+        scale:0;
+        background-color:transparent;
+    }
+    50%{
+        scale: 1;
+        background-color:transparent;
+    }
+    100% {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+}
+
+@keyframes hide-end-screen{
+    0%{
+        scale:1;
+        background-color:rgba(0, 0, 0, 0.5);
+    }
+    50%{
+        scale: 1;
+        background-color:transparent;
+    }
+    100% {
+        scale: 0;
+        background-color:transparent;
     }
 }
 
