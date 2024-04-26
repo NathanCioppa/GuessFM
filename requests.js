@@ -3,6 +3,26 @@ import { Artist } from "./Artist.js"
 import * as Errors from "./errors.js"
 const FatalError = -1
 
+let topArtists = []
+export let topArtistsHasLoaded = false
+async function getTopArtists() {
+    try{
+        for(let i = 1; i <= 20; i++) {
+            const topArtistsRequest = await fetch(`https://ws.audioscrobbler.com/2.0/?method=chart.gettopartists&api_key=0d233a8d757fa7ab78f3a5605a7567af&page=${i}&limit=50&format=json`)
+            const topArtistsResponse = await topArtistsRequest.json()
+
+            topArtistsResponse.artists.artist.map(artist => {
+                if(topArtists.includes(artist.name)) return
+                topArtists.push(artist.name)
+            })
+        }
+
+        topArtistsHasLoaded = true
+    } 
+    catch (error) {Errors.alertFailToGetTopArtists(); console.log(error)}
+}
+await getTopArtists()
+
 // Gets up to 5 tags for the artist. Tags are basically genres.
 async function getTags(musicBrainzArtist) {
     let tags = musicBrainzArtist.tags
@@ -19,12 +39,12 @@ async function getTags(musicBrainzArtist) {
     // If there are not 5 tags listed on the artist's MusicBrainz profile, then tags will be gotten from their Last.fm profile.
     // Last.fm never gives more than 5 tags, and rarely gives less than 5.
     try{
-        let artistInfoRequest = await fetch(`http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&mbid=${musicBrainzArtist.id}&api_key=0d233a8d757fa7ab78f3a5605a7567af&format=json`)
+        let artistInfoRequest = await fetch(`https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&mbid=${musicBrainzArtist.id}&api_key=0d233a8d757fa7ab78f3a5605a7567af&format=json`)
         let artistInfo = await artistInfoRequest.json()
         
         // If the is no artist listed on last.fm under the specified MusicBrainz id, a search by name will be preformed instead.
         if(artistInfo.error) {
-            artistInfoRequest = await fetch(`http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${musicBrainzArtist.name}&api_key=0d233a8d757fa7ab78f3a5605a7567af&format=json`)
+            artistInfoRequest = await fetch(`https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${musicBrainzArtist.name}&api_key=0d233a8d757fa7ab78f3a5605a7567af&format=json`)
             artistInfo = await artistInfoRequest.json()
         }
 
@@ -168,6 +188,14 @@ export async function constructArtistProfile(selectedArtist) {
     let releaseGroups = await getArtistReleaseGroups(selectedArtist.id)
     if(releaseGroups === FatalError) return Errors.alertFailToConstructArtist()
 
+    let rank = "<1000"
+    for(let i = 1; i <= topArtists.length; i++) {
+        if(topArtists[i-1].toLowerCase() == convertToSameDash(selectedArtist.name).toLowerCase()) {
+            rank = i
+            break
+        }
+    }
+
     let artist = new Artist(
         selectedArtist.name,
         selectedArtist.id,
@@ -176,10 +204,18 @@ export async function constructArtistProfile(selectedArtist) {
         await getTags(selectedArtist),
         getArtistAlbumDebut(releaseGroups),
         selectedArtist.area ? await getCountry(selectedArtist.area) : null,
-        await getArtistImageUrl(releaseGroups)
+        await getArtistImageUrl(releaseGroups),
+        rank
     )
     return artist
 }
+
+function convertToSameDash(str) {
+    // Replace any dash-like characters with a standard hyphen
+    // This only exists because the hyphen in blink-182 from musicBrainz did not match last.fm, I have no idea if this applies to all hyphens.
+    var fixedStr = str.replace(/[-‐–—]/g, '-');
+    return fixedStr;
+  }
 
 
 

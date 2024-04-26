@@ -1,6 +1,6 @@
 
 import { Artist } from "./Artist.js"
-import { constructArtistProfile } from "./requests.js"
+import { constructArtistProfile ,topArtistsHasLoaded } from "./requests.js"
 import { ArtistBlock } from "./ArtistBlock.js"
 import * as StyleHelper from "./styleHelper.js"
 import * as Errors from "./errors.js"
@@ -15,6 +15,7 @@ document.querySelector('#max-guesses').innerHTML = MaxGuesses
 
 
 export function submitSearch(query) {
+    if(!topArtistsHasLoaded) return Errors.alertTopArtistsNotLoaded()
     if(!isChoosingSecret && checkNameMatchesSecret(query)) return endGame(true)
     if(query.trim() !== "") {
         StyleHelper.hideSearchResults()

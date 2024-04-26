@@ -12,6 +12,7 @@ export class ArtistBlock extends HTMLElement {
             this.debutAlbumYear = artist.debutAlbumYear
             this.country = artist.country
             this.imageUrl = artist.imageUrl
+            this.rank = artist.rank
         }
 
         ArtistBlock.innerContent = this.innerHTML
@@ -31,6 +32,7 @@ export class ArtistBlock extends HTMLElement {
         const DebutAlbumYear = this.debutAlbumYear || "No Debut Album!"
         const Country = this.country
         const ImageUrl = this.imageUrl
+        const Rank = this.rank
 
         this.innerHTML = `
         <div class="name">
@@ -46,6 +48,7 @@ export class ArtistBlock extends HTMLElement {
 
                 <div class="debutAlbumYear attribute"><span class="label">Debut Album:</span> <span class="value">${DebutAlbumYear}&nbsp;<span class="arrow">></span></span></div>
                 ${Country ? `<div class="country attribute"><span class="label">Country:</span> <span class="value">${Country}</span></div>` : ''}
+                ${Rank ? `<div class="country attribute"><span class="label">Rank:</span> <span class="value">${Rank}</span></div>` : ''}
             </div>
             <div class="tags">
             ${Tags.map(tag => {

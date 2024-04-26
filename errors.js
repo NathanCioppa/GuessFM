@@ -26,3 +26,13 @@ export function alertFailToConstructArtist() {
     document.querySelector("#error-message").innerHTML = "Failed to retrieve all necessary artist info. Wait a moment and try again. "
     showErrorMessage()
 }
+
+export function alertTopArtistsNotLoaded() {
+    document.querySelector("#error-message").innerHTML = "Wait for top artists to finish loading. If this error persists, refresh this tab."
+    showErrorMessage()
+}
+
+export function alertFailToGetTopArtists() {
+    document.querySelector("#error-message").innerHTML = "Failed to retrieve top artists list. Refresh this tab."
+    showErrorMessage()
+}
