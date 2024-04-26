@@ -161,13 +161,17 @@ function compareMainAttributesToSecret(artistGuess) {
     // ie. close guess that is too low will be yellow with an up arrow
     const ClosenessTolerance = 10
     const GuessDebut = artistGuess.artistObject.debutAlbumYear
-    let guessDebutElement = artistGuess.artistBlock.querySelector('.debutAlbumYear')
     
-    const DebutCloseTooLow = GuessDebut < secretArtist.debutAlbumYear && GuessDebut >= secretArtist.debutAlbumYear - ClosenessTolerance
-    if(DebutCloseTooLow) return guessDebutElement.classList.add('close', 'too-low')
-        
-    const DebutCloseTooHigh = GuessDebut > secretArtist.debutAlbumYear && GuessDebut <= secretArtist.debutAlbumYear + ClosenessTolerance
-    if(DebutCloseTooHigh) guessDebutElement.classList.add('close', 'too-high')
+    const TooLow = GuessDebut < secretArtist.debutAlbumYear
+    const TooHigh = GuessDebut > secretArtist.debutAlbumYear
+
+    const IsClose = TooLow&&GuessDebut >= secretArtist.debutAlbumYear-ClosenessTolerance ||  TooHigh&&GuessDebut <= secretArtist.debutAlbumYear+ClosenessTolerance
+    
+    let guessDebutElement = artistGuess.artistBlock.querySelector('.debutAlbumYear')
+
+    if(IsClose) guessDebutElement.classList.add('close')
+    if(TooLow) guessDebutElement.classList.add('too-low')
+    if(TooHigh) guessDebutElement.classList.add('too-high')
 }
 
 function compareTagsToSecret(artistGuess) {
