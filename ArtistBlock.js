@@ -48,7 +48,7 @@ export class ArtistBlock extends HTMLElement {
 
                 <div class="debutAlbumYear attribute"><span class="label">Debut Album:</span> <span class="value">${DebutAlbumYear}&nbsp;<span class="arrow">></span></span></div>
                 ${Country ? `<div class="country attribute"><span class="label">Country:</span> <span class="value">${Country}</span></div>` : ''}
-                ${Rank ? `<div class="country attribute"><span class="label">Rank:</span> <span class="value">${Rank}</span></div>` : ''}
+                ${Rank ? `<div class="rank attribute"><span class="label">Rank:</span> <span class="value">${Rank}&nbsp;<span class="arrow">></span></span></div>` : ''}
             </div>
             <div class="tags">
             ${Tags.map(tag => {

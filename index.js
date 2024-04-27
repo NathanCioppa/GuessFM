@@ -142,8 +142,11 @@ function compareToSecret(artistGuess) {
 // ie. makes attributes green when correct, or yellow when close.
 
 function compareMainAttributesToSecret(artistGuess) {
-    const MainInfoAttributes = ['gender', 'type', 'debutAlbumYear', 'country']
-    let shouldCheckDebutCloseness = true
+    const MainInfoAttributes = ['gender', 'type', 'country']
+
+    checkRankCloseness(artistGuess.artistObject, artistGuess.artistBlock)
+
+    checkDebutAlbumCloseness(artistGuess.artistObject, artistGuess.artistBlock)
 
     // Check for exact matches in main attributes
     MainInfoAttributes.map(attributeName => {
@@ -154,24 +157,6 @@ function compareMainAttributesToSecret(artistGuess) {
             attributeName === 'debutAlbumYear' && (shouldCheckDebutCloseness = false)
         }
     })
-    if(!shouldCheckDebutCloseness) return
-
-    // Check for close guesses in debut album year
-    // Close guesses will have css classes added to them so that they display as close and either too high or low
-    // ie. close guess that is too low will be yellow with an up arrow
-    const ClosenessTolerance = 10
-    const GuessDebut = artistGuess.artistObject.debutAlbumYear
-    
-    const TooLow = GuessDebut < secretArtist.debutAlbumYear
-    const TooHigh = GuessDebut > secretArtist.debutAlbumYear
-
-    const IsClose = TooLow&&GuessDebut >= secretArtist.debutAlbumYear-ClosenessTolerance ||  TooHigh&&GuessDebut <= secretArtist.debutAlbumYear+ClosenessTolerance
-    
-    let guessDebutElement = artistGuess.artistBlock.querySelector('.debutAlbumYear')
-
-    if(IsClose) guessDebutElement.classList.add('close')
-    if(TooLow) guessDebutElement.classList.add('too-low')
-    if(TooHigh) guessDebutElement.classList.add('too-high')
 }
 
 function compareTagsToSecret(artistGuess) {
@@ -201,6 +186,37 @@ function compareTagsToSecret(artistGuess) {
                 tagElement.classList.add('close')
         })
     }
+}
+
+// Checks the rank of the Artist passed as the 'artist' argument against the current secret artist,
+// then updates the ArtistBlock passed as the 'artistBlock' argument to display how close the guess is. 
+// 'artistBlock' should be the ArtistBlock that corresponds to the Artist passed as 'artist'
+function checkRankCloseness(artist, artistBlock) {
+    const ClosenessTolerance = 50
+    const Difference = (artist.rank === "<1000" ? 1001 : artist.rank) - (secretArtist.rank === "<1000" ? 1001 : secretArtist.rank)
+
+    if(Difference === 0) return artistBlock.querySelector('.rank').classList.add('correct')
+
+    if(Difference > 0) artistBlock.querySelector('.rank').classList.add('too-low')
+    if(Difference < 0) artistBlock.querySelector('.rank').classList.add('too-high')
+
+    if(Math.abs(Difference) <= ClosenessTolerance) artistBlock.querySelector('.rank').classList.add('close')
+}
+
+// Checks the debut album year of the Artist passed as the 'artist' argument against the current secret artist,
+// then updates the ArtistBlock passed as the 'artistBlock' argument to display how close the guess is. 
+// 'artistBlock' should be the ArtistBlock that corresponds to the Artist passed as 'artist'
+function checkDebutAlbumCloseness(artist, artistBlock) {
+    if(artist.debutAlbumYear == null || secretArtist.debutAlbumYear == null) return
+    if(artist.debutAlbumYear === secretArtist.debutAlbumYear) return artistBlock.querySelector('.debutAlbumYear').classList.add('correct')
+    
+    const ClosenessTolerance = 10
+    const Difference = artist.debutAlbumYear - secretArtist.debutAlbumYear
+
+    if(Difference < 0) artistBlock.querySelector('.debutAlbumYear').classList.add('too-low')
+    if(Difference > 0) artistBlock.querySelector('.debutAlbumYear').classList.add('too-high')
+
+    if(Math.abs(Difference) <= ClosenessTolerance) artistBlock.querySelector('.debutAlbumYear').classList.add('close')
 }
 
 export function resetGame() {
