@@ -1,6 +1,6 @@
 
 import { Artist } from "./Artist.js"
-import { constructArtistProfile ,topArtistsHasLoaded } from "./requests.js"
+import { constructArtistProfile ,topArtistsHasLoaded, topArtists } from "./requests.js"
 import { ArtistBlock } from "./ArtistBlock.js"
 import * as StyleHelper from "./styleHelper.js"
 import * as Errors from "./errors.js"
@@ -14,6 +14,12 @@ document.querySelector('#max-guesses').innerHTML = MaxGuesses
 
 
 
+export function setRandomArtistAsSecret() {
+    if(!isChoosingSecret || !topArtistsHasLoaded) return window.alert("failed to pick a random artist")
+
+    searchMusicBrainz(topArtists[Math.floor(Math.random() * topArtists.length)], true)
+}
+
 export function submitSearch(query) {
     if(!topArtistsHasLoaded) return Errors.alertTopArtistsNotLoaded()
     if(!isChoosingSecret && checkNameMatchesSecret(query)) return endGame(true)
@@ -23,17 +29,23 @@ export function submitSearch(query) {
     }
 }
 
-async function searchMusicBrainz(query) {
+export async function searchMusicBrainz(query, isRandomSearch) {
+    console.log(query)
     StyleHelper.hideErrorMessage()
     StyleHelper.showLoadingAnimation()
     try {    
         const SearchRequest = await fetch(`https://musicbrainz.org/ws/2/artist/?query=${query}&fmt=json`)
         const SearchResults = await SearchRequest.json()
 
-        if(SearchResults.count && SearchResults.count > 0)
-            return displayArtistSearchResults(SearchResults.artists)
+        if(!SearchResults.count || SearchResults.count <= 0)
+            return Errors.alertFailToSearch()
         
-        Errors.alertFailToSearch()
+        if(isRandomSearch) {
+            const artist = SearchResults.artists[0]
+            return setSecretArtist(await constructArtistProfile(artist))
+        } 
+        
+        displayArtistSearchResults(SearchResults.artists)
     } 
     catch (error) {Errors.alertFailToSearch(); console.log(error)}
 }
@@ -90,7 +102,10 @@ export async function selectArtist(artistElement) {
 function setSecretArtist(artist) {
     secretArtist = artist
     isChoosingSecret = false
+    document.querySelector('#guess-count').innerHTML = guesses.length+1
     StyleHelper.showGuessCount()
+    StyleHelper.hideLoadingAnimation()
+    StyleHelper.randomizeArtistSearchPlaceholder()
 }
 
 function guessArtist(artist) {
