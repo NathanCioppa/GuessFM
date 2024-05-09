@@ -1,6 +1,7 @@
 
 import { Artist } from "./Artist.js"
 import * as Errors from "./errors.js"
+import { setRandomGuessBtnActive } from "./styleHelper.js"
 const FatalError = -1
 
 export let topArtists = []
@@ -18,6 +19,7 @@ async function getTopArtists() {
         }
 
         topArtistsHasLoaded = true
+        setRandomGuessBtnActive()
     } 
     catch (error) {Errors.alertFailToGetTopArtists(); console.log(error)}
 }
@@ -181,7 +183,6 @@ async function getArtistImageUrl(artistMusicBrainzReleaseGroups) {
 
 // Creates an Artist object that will be used in the game.
 export async function constructArtistProfile(selectedArtist) {
-    console.log(selectedArtist)
     let artistType
     if(selectedArtist.type === "Person") artistType = "Individual"
     if(selectedArtist.type === "Group") artistType = "Group"
@@ -214,7 +215,6 @@ export async function constructArtistProfile(selectedArtist) {
 }
 
 function convertToSameDash(str) {
-    console.log(str)
     // Replace any dash-like characters with a standard hyphen
     // This only exists because the hyphen in blink-182 from musicBrainz did not match last.fm, I have no idea if this applies to all hyphens.
     var fixedStr = str.replace(/[-‐–—]/g, '-');

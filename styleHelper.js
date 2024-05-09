@@ -74,3 +74,18 @@ export function showEndScreen() {
 export function hideEndScreen() {
     document.documentElement.style.setProperty("--end-screen-animation", "hide-end-screen 0.5s forwards")
 }
+
+
+
+
+export function setRandomGuessBtnActive() {
+    document.documentElement.style.setProperty("--random-guess-bg", "rgb(140, 46, 163)")
+}
+
+export function hideRandomGuessBtn() {
+    document.documentElement.style.setProperty("--random-guess-scale", "0")
+}
+
+export function showRandomGuessBtn() {
+    document.documentElement.style.setProperty("--random-guess-scale", "1")
+}

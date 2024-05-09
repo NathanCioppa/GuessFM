@@ -7,7 +7,7 @@ import * as Errors from "./errors.js"
 
 let currentlyDisplayedArtists = []
 let guesses = []
-let isChoosingSecret = true
+export let isChoosingSecret = true
 let secretArtist
 const MaxGuesses = 10
 document.querySelector('#max-guesses').innerHTML = MaxGuesses
@@ -16,7 +16,8 @@ document.querySelector('#max-guesses').innerHTML = MaxGuesses
 
 export function setRandomArtistAsSecret() {
     if(!isChoosingSecret || !topArtistsHasLoaded) return window.alert("failed to pick a random artist")
-
+    
+    StyleHelper.hideRandomGuessBtn()
     searchMusicBrainz(topArtists[Math.floor(Math.random() * topArtists.length)], true)
 }
 
@@ -30,9 +31,9 @@ export function submitSearch(query) {
 }
 
 export async function searchMusicBrainz(query, isRandomSearch) {
-    console.log(query)
     StyleHelper.hideErrorMessage()
     StyleHelper.showLoadingAnimation()
+    
     try {    
         const SearchRequest = await fetch(`https://musicbrainz.org/ws/2/artist/?query=${query}&fmt=json`)
         const SearchResults = await SearchRequest.json()
@@ -79,6 +80,7 @@ export async function selectArtist(artistElement) {
             return
         }
     })
+    StyleHelper.hideRandomGuessBtn()
     StyleHelper.hideSearchResults()
     StyleHelper.randomizeArtistSearchPlaceholder()
     if(isChoosingSecret) StyleHelper.clearArtistSearchInput()
@@ -247,4 +249,6 @@ export function resetGame() {
     StyleHelper.resetSearchPlaceholder()
     
     StyleHelper.hideEndScreen()
+
+    StyleHelper.showRandomGuessBtn()
 }
